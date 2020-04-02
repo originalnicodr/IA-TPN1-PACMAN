@@ -324,9 +324,9 @@ class CornersProblem(search.SearchProblem):
 
         self._expanded += 1
 
-        if state not in self._visited:#lo saque del anterior
-            self._visited[state] = True
-            self._visitedlist.append(state)
+        #if state not in self._visited:#lo saque del anterior
+        #    self._visited[state] = True
+        #    self._visitedlist.append(state)
 
         return successors
 

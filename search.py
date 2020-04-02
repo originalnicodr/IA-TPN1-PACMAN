@@ -12,7 +12,7 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
-import searchAgents
+#import searchAgents
 
 class SearchProblem:
     """
@@ -131,39 +131,15 @@ def uniformCostSearch(problem):
         candidate = priorityq.pop()
         state, actions, cost= candidate
         if problem.isGoalState(state):
+            for x in actions: print x#debugging
             return actions
         if state not in estados_visitados:
             estados_visitados.add(state)
             candidate_successors = problem.getSuccessors(state)
             for candidatev in candidate_successors:
                 statev,actionsv,costv =candidatev
-                priorityq.push(candidatev,costv)
+                priorityq.push((statev,actions+[actionsv],costv),costv)
     #return actions
-"""
-def uniformCostSearch(problem):
-
-
-    listanodos = util.PriorityQueue()
-    inicio = problem.getStartState()
-    listanodos.push((inicio,"Inicio",1),0)
-    solucion = []
-    padres = {}
-    padres[inicio] = None
-
-    while (not(listanodos.isEmpty())):
-        nodo = listanodos.pop()
-        pos,accion,costo = nodo
-        if (problem.isGoalState(pos)):
-            return armarsolucion(padres,nodo)
-        else:
-            listahijos = problem.getSuccessors(pos)
-            for hijo in listahijos:
-                if(not(padres.has_key(hijo))):
-                    padres[hijo] = nodo
-                    (posH,accionH,costoH) = hijo
-                    listanodos.push(hijo,costoH)
-
-    return []"""
 
 def nullHeuristic(state, problem=None):
     """
