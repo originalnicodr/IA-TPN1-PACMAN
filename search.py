@@ -77,7 +77,9 @@ def search(problem, fringe):#busqueda general?
     while not fringe.isEmpty():
         candidate = fringe.pop()
         state, actions = candidate
+        #print state#para debuggear
         if problem.isGoalState(state):
+            #for x in actions: print x#para debuggear
             return actions
         if state not in closed_set:
             closed_set.add(state)
@@ -131,7 +133,7 @@ def uniformCostSearch(problem):
         candidate = priorityq.pop()
         state, actions, cost= candidate
         if problem.isGoalState(state):
-            for x in actions: print x#debugging
+            #for x in actions: print x#debugging
             return actions
         if state not in estados_visitados:
             estados_visitados.add(state)
