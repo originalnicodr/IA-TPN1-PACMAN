@@ -292,11 +292,6 @@ class CornersProblem(search.SearchProblem):
         if isGoal:
             self.corners=filter(lambda x: x!=state, self.corners)
             self._visitedlist.append(state)
-            import __main__
-            if '_display' in dir(__main__):
-                if 'drawExpandedCells' in dir(__main__._display): #@UndefinedVariable
-                    __main__._display.drawExpandedCells(self._visitedlist) #@UndefinedVariable
-
         return isGoal
 
     def getSuccessors(self, state):
@@ -361,7 +356,7 @@ def cornersHeuristic(state, problem):
     on the shortest path from the state to a goal of the problem; i.e.
     it should be admissible (as well as consistent).
     """
-    problem.corners=filter(lambda x: x!=state, self.corners)
+    problem.corners=filter(lambda x: x not in self._visitedlist, self.corners) #puede que sea lenta la funcion, probar sino con x!=state
     corners =  problem.corners#filter(problem.isGoalState, problem.corners) # These are the corner coordinates TENGO QUE FILTRAR ACA SI TIENEN COMIDA
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
     if state in walls: return 999999

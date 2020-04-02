@@ -12,7 +12,6 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
-import searchAgents
 
 class SearchProblem:
     """
@@ -68,7 +67,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s,s,w,s,w,w,s,w]
 
-def search(problem, fringe):#busqueda general?
+def search(problem, fringe):
     initial_state = problem.getStartState()
     initial_actions = []
     initial_candidate = (initial_state, initial_actions)
@@ -87,6 +86,20 @@ def search(problem, fringe):#busqueda general?
             for candidate in candidate_successors:
                 fringe.push(candidate)
 
+
+def armarsolucion(padres,nodo):
+    
+    (sucesor,accion,costo) = nodo
+    solucion = [accion]
+        
+    while (accion != "Inicio"):
+        nodo = padres[nodo]
+        (sucesor,accion,costo) = nodo
+        solucion = [accion] + solucion 
+    
+    return solucion[1:]
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first
@@ -101,55 +114,42 @@ def depthFirstSearch(problem):
     print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    stack=util.Stack()
-    return search(problem,stack)
+    
+    listanodos = util.Stack()
+    inicio = problem.getStartState()
+    listanodos.push((inicio,"Inicio",1))
+    solucion = []
+    padres = {}
+    padres[inicio] = None
+    
+    while (not(listanodos.isEmpty())):
+        nodo = listanodos.pop()
+        pos,accion,costo = nodo
+        if (problem.isGoalState(pos)):
+            return armarsolucion(padres,nodo)
+        else:
+            listahijos = problem.getSuccessors(pos)
+            # ~ print "\n" , nodo, "\n"
+            for hijo in listahijos:
+                # ~ print hijo
+                if(not(padres.has_key(hijo))): 
+                    padres[hijo] = nodo
+                    listanodos.push(hijo)
+    
+    return []
 
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    q=util.Queue()
-    return search(problem,q)
-
-#Funcion auxiliar para uniformCOstSearch
-def Diff(li1, li2):
-    return (list(set(li1) - set(li2)))
-
-#Ver
-
-def uniformCostSearch(problem):
-    "Search the node of least total cost first."
-    priorityq=util.PriorityQueue()
-    #funcion_costo=problem.getCostOfActions#lambda x:1 #lambda x: util.manhattanDistance(x,problem.goal)
-    initial_state = problem.getStartState()
-    initial_actions = []
-    initial_candidate = (initial_state, initial_actions,1)
-    priorityq.push(initial_candidate,0)#sino poner costo de 1
-    estados_visitados = set()
-    while not priorityq.isEmpty():
-        candidate = priorityq.pop()
-        state, actions, cost= candidate
-        if problem.isGoalState(state):
-            return actions
-        if state not in estados_visitados:
-            estados_visitados.add(state)
-            candidate_successors = problem.getSuccessors(state)
-            for candidatev in candidate_successors:
-                statev,actionsv,costv =candidatev
-                priorityq.push(candidatev,costv)
-    #return actions
-"""
-def uniformCostSearch(problem):
-
-
-    listanodos = util.PriorityQueue()
+    listanodos = util.Queue()
     inicio = problem.getStartState()
-    listanodos.push((inicio,"Inicio",1),0)
+    listanodos.push((inicio,"Inicio",1))
     solucion = []
     padres = {}
     padres[inicio] = None
-
+    
     while (not(listanodos.isEmpty())):
         nodo = listanodos.pop()
         pos,accion,costo = nodo
@@ -158,12 +158,37 @@ def uniformCostSearch(problem):
         else:
             listahijos = problem.getSuccessors(pos)
             for hijo in listahijos:
-                if(not(padres.has_key(hijo))):
+                if(not(padres.has_key(hijo))): 
+                    padres[hijo] = nodo
+                    listanodos.push(hijo)
+    
+    return []
+    
+
+def uniformCostSearch(problem):
+    
+    
+    listanodos = util.PriorityQueue()
+    inicio = problem.getStartState()
+    listanodos.push((inicio,"Inicio",1),0)
+    solucion = []
+    padres = {}
+    padres[inicio] = None
+    
+    while (not(listanodos.isEmpty())):
+        nodo = listanodos.pop()
+        pos,accion,costo = nodo
+        if (problem.isGoalState(pos)):
+            return armarsolucion(padres,nodo)
+        else:
+            listahijos = problem.getSuccessors(pos)
+            for hijo in listahijos:
+                if(not(padres.has_key(hijo))): 
                     padres[hijo] = nodo
                     (posH,accionH,costoH) = hijo
                     listanodos.push(hijo,costoH)
-
-    return []"""
+    
+    return []
 
 def nullHeuristic(state, problem=None):
     """
@@ -174,25 +199,6 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
-    priorityq=util.PriorityQueue()
-    initial_state = problem.getStartState()
-    initial_actions = []
-    initial_candidate = (initial_state, initial_actions)
-    priorityq.push(initial_candidate,len(initial_actions)+heuristic(initial_state,problem))#podria poner 0 aca sino(no estaria bien pero daria igual?)
-    closed_set = set()
-    while not priorityq.isEmpty():
-        candidate = priorityq.pop()
-        state, actions = candidate
-        if problem.isGoalState(state):
-            return actions
-        if state not in closed_set:
-            closed_set.add(state)
-            candidate_successors = problem.getSuccessors(state)
-            candidate_successors = filter(lambda x: x[0] not in closed_set, candidate_successors)
-            candidate_successors = map(lambda x: (x[0], actions + [x[1]]), candidate_successors)
-            for candidate in candidate_successors:
-                priorityq.push(candidate,len(actions)+1+heuristic(candidate[0],problem))
-
 
 # Abbreviations
 bfs = breadthFirstSearch
