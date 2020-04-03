@@ -1,3 +1,22 @@
+"""
+En la funcion getSuccessors de CornersProblem se verifica la consistencia de la
+heuristica dada. Para probarlo basta con descomentar dichas lineas (se opto
+por dejarlas comentadas por defecto ya que no son relevantes a menos que se
+utilice la heuristica brindada).
+
+Lo que hace el chequeo es verificar la condicion de consistencia, al revisar que
+f(padre(x))<=f(x) se cumpla para cada nodo expandido, lo cual es equivalente a
+h(padre(x))<=h(x)+1 ya que los costos de movimiento son siempre uno, entonces:
+
+                        f(padre(x))<=f(x)
+                        g(padre(x))+h(padre(x))<=g(x)+h(x)
+                        h(padre(x))<=h(x)+g(x)-g(padre(x))
+                        h(padre(x))<=h(x)+1     (g(x)-g(padre(x))=1 por lo dicho
+                                                anteriormente)
+
+Al verificar que la heuristica dada es consistente tambien verificamos
+que es admisible, por que toda heuristica consistente es admisible.
+"""
 # searchAgents.old.py
 # -------------------
 # Licensing Information: Please do not distribute or publish solutions to this
@@ -276,9 +295,8 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # Number of search nodes expanded
-
-        self._visited={}
-        self._visitedlist=[]
+        #self._visited={}
+        #self._visitedlist=[]
 
         "*** YOUR CODE HERE ***"
 
@@ -289,10 +307,6 @@ class CornersProblem(search.SearchProblem):
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
         "*** YOUR CODE HERE ***"
-        #self.hasFood(state) #deberia retoranar esto nomas?
-        #if state[0] in self.corners:
-        #    self.corners=filter(lambda x: x!=state[0], self.corners)
-        #    self._visitedlist.append(state)
         return len(state[1])==0
 
     def getSuccessors(self, state):
@@ -311,23 +325,25 @@ class CornersProblem(search.SearchProblem):
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
             # Add a successor state to the successor list if the action is legal
             # Here's a code snippet for figuring out whether a new position hits a wall:
-            #print state
-            x,y = state[0] #capaz tenga que agarrar un elemento de la tupla
+            x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
             hitsWall = self.walls[nextx][nexty]
 
-            if not hitsWall:#lo saque del anterior
+            if not hitsWall:
                 nextState = (nextx, nexty)
-                cost = 1#self.costFn(nextState)
-                if nextState in state[1]: successors.append( ((nextState,filter(lambda x: x!=nextState, state[1])), action, cost) )
-                else: successors.append( ((nextState,state[1]), action, cost) )
+                cost = 1
+                corners=state[1]
+                if nextState in state[1]: corners=filter(lambda x: x!=nextState, state[1])
+                successors.append( ((nextState,corners), action, cost) )
 
-            "*** YOUR CODE HERE ***"
+                #Chequeo de consistencia (para chequear la consistencia descomentar estas lineas)
+                heuristica=lambda x: 0 if len(x[1])==0 else (sum (map (lambda y:util.manhattanDistance(y,x[0]),x[1])))//len(x[1])
+                if heuristica(state)>(heuristica((nextState,corners))+1):#el +1 representa el movimiento
+                    print "La heuristica NO es consistente"
 
         self._expanded += 1
-
-        return successors#return map(lambda (sucessor,action,stepCost): ((sucessor,len(self.corners)),action,stepCost) ,successors)
+        return successors
 
     def getCostOfActions(self, actions):
         """
@@ -356,11 +372,19 @@ def cornersHeuristic(state, problem):
     it should be admissible (as well as consistent).
     """
 
-    corners =  state[1]#filter(problem.isGoalState, problem.corners) # These are the corner coordinates TENGO QUE FILTRAR ACA SI TIENEN COMIDA
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
+    corners =  state[1]
+    walls = problem.walls
     if state[0] in walls: return 999999
     if len(corners)==0: return 0
     return (sum (map (lambda x:util.manhattanDistance(x,state[0]),corners)))//len(corners)
+
+    #Alternativas
+    #return min(map(lambda x:util.manhattanDistance(x,state[0]),corners))
+    #return max(map(lambda x:util.manhattanDistance(x,state[0]),corners))
+
+    #Funciones de chequeo de consistencia para las heuristicas alternativas
+        #heuristica=lambda x: max(map(lambda y:util.manhattanDistance(y,x[0]),x[1]))
+        #heuristica=lambda x: min(map(lambda y:util.manhattanDistance(y,x[0]),x[1]))
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

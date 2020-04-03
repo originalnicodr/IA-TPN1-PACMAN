@@ -12,7 +12,6 @@ by Pacman agents (in searchAgents.py).
 """
 
 import util
-#import searchAgents
 
 class SearchProblem:
     """
@@ -68,7 +67,7 @@ def tinyMazeSearch(problem):
     w = Directions.WEST
     return  [s,s,w,s,w,w,s,w]
 
-def search(problem, fringe):#busqueda general?
+def search(problem, fringe):
     initial_state = problem.getStartState()
     initial_actions = []
     initial_candidate = (initial_state, initial_actions)
@@ -114,20 +113,13 @@ def breadthFirstSearch(problem):
     q=util.Queue()
     return search(problem,q)
 
-#Funcion auxiliar para uniformCOstSearch
-def Diff(li1, li2):
-    return (list(set(li1) - set(li2)))
-
-#Ver
-
 def uniformCostSearch(problem):
     "Search the node of least total cost first."
     priorityq=util.PriorityQueue()
-    #funcion_costo=problem.getCostOfActions#lambda x:1 #lambda x: util.manhattanDistance(x,problem.goal)
     initial_state = problem.getStartState()
     initial_actions = []
     initial_candidate = (initial_state, initial_actions,1)
-    priorityq.push(initial_candidate,0)#sino poner costo de 1
+    priorityq.push(initial_candidate,0)
     estados_visitados = set()
     while not priorityq.isEmpty():
         candidate = priorityq.pop()
@@ -141,7 +133,6 @@ def uniformCostSearch(problem):
             for candidatev in candidate_successors:
                 statev,actionsv,costv =candidatev
                 priorityq.push((statev,actions+[actionsv],costv),costv)
-    #return actions
 
 def nullHeuristic(state, problem=None):
     """
