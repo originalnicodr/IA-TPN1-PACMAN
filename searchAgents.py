@@ -18,7 +18,7 @@ Al verificar que la heuristica dada es consistente tambien verificamos
 que es admisible, por que toda heuristica consistente es admisible.
 
 Se opto por la heuristica del maximo de las distancias manhattan a las esquinas
-restantes ya que expande menos nodos que el minimo de de dichas distancias o su
+restantes ya que expande menos nodos que el minimo de dichas distancias o su
 promedio (heuristicas que tambien son consistentes y, por lo tanto, admisibles).
 """
 # searchAgents.old.py
